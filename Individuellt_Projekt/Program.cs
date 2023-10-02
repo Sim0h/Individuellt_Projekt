@@ -28,7 +28,7 @@ namespace Individuellt_Projekt
             };
 
             int numberOfTries = 2;
-            string loggedInUser = null;
+            string loggedInUser = "";
             bool inloggad = false;
             while (inloggad == false)
             {
@@ -93,7 +93,7 @@ namespace Individuellt_Projekt
                             TransferBetweenAccounts(loggedInUser, accountNames[userIndex], accountBalance[userIndex]);
                             break;
                         case 3:
-                            WithdrawFromAccount(loggedInUser, accountNames[userIndex], accountBalance[userIndex]);
+                            WithdrawFromAccount(loggedInUser, accountNames[userIndex], accountBalance[userIndex], pinCode, Users);
                             break;
                         case 4:
                             Console.WriteLine("Du har loggat ut. Välkommen åter!");
@@ -122,7 +122,7 @@ namespace Individuellt_Projekt
 
         }
 
-        public static void WithdrawFromAccount(string user, string[] accountNames, decimal[] accountBalances)
+        public static void WithdrawFromAccount(string user, string[] accountNames, decimal[] accountBalances , string[] pinCode , string[] Users)
         {
 
             Console.WriteLine($"Ta ut pengar för {user}:");
@@ -131,14 +131,14 @@ namespace Individuellt_Projekt
             ShowAccountBalance(user, accountNames, accountBalances);
             
             Console.WriteLine("Välj konto att ta ut pengar från: ");
-            int sourceIndex = int.Parse(Console.ReadLine()) - 1;
+            int sourceIndex = Convert.ToInt32(Console.ReadLine()) -1;
 
             Console.WriteLine("Ange summa att ta ut: ");
             decimal withdrawAmount = decimal.Parse(Console.ReadLine());
 
             Console.WriteLine("Ange din PIN-kod för att bekräfta: ");
             string pinConfirmation = Console.ReadLine();
-
+            
             int userIndex = Array.IndexOf(Users, user);
 
             if (userIndex != -1 && pinConfirmation == pinCode[userIndex] &&
@@ -148,6 +148,8 @@ namespace Individuellt_Projekt
                 accountBalances[sourceIndex] -= withdrawAmount;
                 Console.WriteLine($"Uttag av {withdrawAmount} lyckat!");
                 Console.WriteLine($"Nytt saldo på {accountNames[sourceIndex]}: {accountBalances[sourceIndex]}");
+                Console.ReadKey();
+                
             }
             else
             {
@@ -163,13 +165,13 @@ namespace Individuellt_Projekt
             // Visa användaren sina konton
             ShowAccountBalance(user, accountNames, accountBalances);
 
-            Console.Write("Välj konto att ta pengar från: ");
+            Console.WriteLine("Välj konto att ta pengar från: ");
             int sourceIndex = int.Parse(Console.ReadLine()) - 1;
 
-            Console.Write("Välj konto att flytta pengarna till: ");
+            Console.WriteLine("Välj konto att flytta pengarna till: ");
             int targetIndex = int.Parse(Console.ReadLine()) - 1;
 
-            Console.Write("Ange summa att flytta: ");
+            Console.WriteLine("Ange summa att flytta: ");
             decimal transferAmount = decimal.Parse(Console.ReadLine());
 
             if (sourceIndex >= 0 && sourceIndex < accountBalances.Length &&
