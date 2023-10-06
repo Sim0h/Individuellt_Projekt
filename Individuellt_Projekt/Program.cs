@@ -13,8 +13,8 @@ namespace Individuellt_Projekt
 
             decimal[][] accountBalance =
             {
-                new decimal[] { 2000, 1000, 500 },
-                new decimal[] { 2000, 1000, 500 },
+                new decimal[] { 2000, 1000 },
+                new decimal[] { 2000, 10000, 500 },
                 new decimal[] { 1500 },
                 new decimal[] { 3000, 200, 100 },
                 new decimal[] { 800, 200 }
@@ -66,6 +66,9 @@ namespace Individuellt_Projekt
 
                         while (numberOfTries == 0)
                         {
+                            Console.WriteLine("Max antal försök uppnåt. Vänligen försök logga in igen.");
+                            Console.ReadKey();
+                            Console.Clear();
                             break;
                         }
                     }
