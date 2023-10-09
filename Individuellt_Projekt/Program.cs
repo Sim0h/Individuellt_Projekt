@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Net.Mime;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 
@@ -13,15 +14,15 @@ namespace Individuellt_Projekt
 
             decimal[][] accountBalance =
             {
-                new decimal[] { 2000, 1000 },
-                new decimal[] { 2000, 10000, 500 },
-                new decimal[] { 1500 },
-                new decimal[] { 3000, 200, 100 },
-                new decimal[] { 800, 200 }
+                new decimal[] { 21250, 15000 },
+                new decimal[] { 25350, 10000, 5000, 250000 },
+                new decimal[] { 150000 },
+                new decimal[] { 30256, 20000, 1000 },
+                new decimal[] { 80000, 20000 }
             };
             string[][] accountNames = {
                 new string[] { "1. Lönekonto", "2. Sparkonto" },
-                new string[] { "1. Lönekonto", "2. Sparkonto", "3. Resekonto" },
+                new string[] { "1. Lönekonto", "2. Sparkonto", "3. Resekonto", "4. Pensionskonto" },
                 new string[] { "1. Sparkonto" },
                 new string[] { "1. Lönekonto", "2. Hyreskonto", "3. Sparande" },
                 new string[] { "1. Lönekonto", "2. Fritidskonto" }
@@ -116,21 +117,24 @@ namespace Individuellt_Projekt
 
         public static void ShowAccountBalance(string user, string[] accountNames, decimal[] accountBalances)
         {
+            // Metod presenterar inloggad användares konton och summan på dessa konton. 
             Console.WriteLine($"Konton för {user}:");
             for (int i = 0; i < accountNames.Length; i++)
             {
                 Console.WriteLine($"{accountNames[i]}: {accountBalances[i]}");
             }
+            Console.WriteLine("Vänligen klicka enter för att gå vidare.");
             Console.ReadKey();
+            
 
         }
 
         public static void WithdrawFromAccount(string user, string[] accountNames, decimal[] accountBalances , string[] pinCode , string[] Users)
         {
-
+            // metoden använder sig av metoden ShowAccountBalance för att presentera användarens konton samt kunna göra urtag. 
             Console.WriteLine($"Ta ut pengar för {user}:");
 
-            // Visa användaren sina konton
+            
             ShowAccountBalance(user, accountNames, accountBalances);
             
             Console.WriteLine("Välj konto att ta ut pengar från: ");
@@ -143,6 +147,8 @@ namespace Individuellt_Projekt
             string pinConfirmation = Console.ReadLine();
             
             int userIndex = Array.IndexOf(Users, user);
+
+            // kontrollerar flera moment för att kunna göra ett urtag, finns tillräckligt med saldo? var PIN-kod ok? valt konto? 
 
             if (userIndex != -1 && pinConfirmation == pinCode[userIndex] &&
                 sourceIndex >= 0 && sourceIndex < accountBalances.Length &&
@@ -163,9 +169,10 @@ namespace Individuellt_Projekt
 
         public static void TransferBetweenAccounts(string user, string[] accountNames, decimal[] accountBalances)
         {
+            /* likt för att ta ut gäller samma förutsättningar för att kunna flytta emellan konton. 
+            Anropar tidigare medtod ShowAccountBalance för att visa användaren hur mycket det finns på deras konto */
             Console.WriteLine($"Överföring mellan konton för {user}:");
-
-            // Visa användaren sina konton
+                        
             ShowAccountBalance(user, accountNames, accountBalances);
 
             Console.WriteLine("Välj konto att ta pengar från: ");
@@ -176,20 +183,23 @@ namespace Individuellt_Projekt
 
             Console.WriteLine("Ange summa att flytta: ");
             decimal transferAmount = decimal.Parse(Console.ReadLine());
-
-            if (sourceIndex >= 0 && sourceIndex < accountBalances.Length &&
-                targetIndex >= 0 && targetIndex < accountBalances.Length &&
-                accountBalances[sourceIndex] >= transferAmount)
-            {
-                accountBalances[sourceIndex] -= transferAmount;
-                accountBalances[targetIndex] += transferAmount;
-                Console.WriteLine("Överföring lyckad!");
-            }
-            else
-            {
-                Console.WriteLine("Ogiltig överföring. Kontrollera dina val och saldo.");
-            }
-            Console.ReadKey();
+                                    
+              if (sourceIndex >= 0 && sourceIndex < accountBalances.Length &&
+                  targetIndex >= 0 && targetIndex < accountBalances.Length &&  
+                  accountBalances[sourceIndex] >= transferAmount)  
+              {
+                   accountBalances[sourceIndex] -= transferAmount;
+                   accountBalances[targetIndex] += transferAmount;
+                   Console.WriteLine("Överföring lyckad!"); 
+                   Console.WriteLine($"Nytt saldo på {accountNames[sourceIndex]}: {accountBalances[sourceIndex]}kr.\nNytt saldo på {accountNames[targetIndex]}: {accountBalances[targetIndex]}kr.");  
+              }
+              else
+              {
+                 Console.WriteLine("Ogiltig överföring. Kontrollera dina val och saldo.");
+                    
+              }
+               Console.ReadKey();
+            
         }
 
 
