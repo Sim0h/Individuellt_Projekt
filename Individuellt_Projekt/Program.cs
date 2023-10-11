@@ -67,9 +67,9 @@ namespace Individuellt_Projekt
 
                         while (numberOfTries == 0)
                         {
-                            Console.WriteLine("Max antal försök uppnåt. Vänligen försök logga in igen.");
+                            Console.WriteLine("Max antal försök uppnåt. Vänligen starta om programmet för att logga in igen.");
                             Console.ReadKey();
-                            Console.Clear();
+                            Environment.Exit(0);
                             break;
                         }
                     }
@@ -81,7 +81,7 @@ namespace Individuellt_Projekt
                     Console.Clear();
                     Console.WriteLine("Välkommen {0}! Vad vill du göra? ", loggedInUser);
                     Console.WriteLine("1. Se över dina konton och saldo ");
-                    Console.WriteLine("2. Överförning mellan konton ");
+                    Console.WriteLine("2. Överföring mellan konton ");
                     Console.WriteLine("3. Ta ut pengar ");
                     Console.WriteLine("4. Logga ut. ");
 
@@ -105,6 +105,11 @@ namespace Individuellt_Projekt
                             Console.ReadKey();
                             Console.Clear();
                             break;
+                        default:
+                            Console.WriteLine("Ogiltligt val.\nVänligen klicka enter för gå tillbaka till huvudmenyn." );
+                            Console.ReadKey();
+                            Console.Clear();
+                            break;
 
                     }
                 }
@@ -121,9 +126,9 @@ namespace Individuellt_Projekt
             Console.WriteLine($"Konton för {user}:");
             for (int i = 0; i < accountNames.Length; i++)
             {
-                Console.WriteLine($"{accountNames[i]}: {accountBalances[i]}");
+                Console.WriteLine($"{accountNames[i]}: {accountBalances[i]}kr.");
             }
-            Console.WriteLine("Vänligen klicka enter för att gå vidare.");
+            Console.WriteLine("Vänligen klicka Enter för att gå vidare.");
             Console.ReadKey();
             
 
@@ -164,7 +169,8 @@ namespace Individuellt_Projekt
             {
                 Console.WriteLine("Ogiltigt uttag. Kontrollera dina val, saldo och PIN-kod.");
             }
-
+            Console.WriteLine("Vänligen klicka Enter för komma till huvudmenyn.");
+            Console.ReadKey();
         }
 
         public static void TransferBetweenAccounts(string user, string[] accountNames, decimal[] accountBalances)
@@ -175,7 +181,7 @@ namespace Individuellt_Projekt
                         
             ShowAccountBalance(user, accountNames, accountBalances);
 
-            Console.WriteLine("Välj konto att ta pengar från: ");
+            Console.WriteLine("Välj konto att flytta pengar från: ");
             int sourceIndex = int.Parse(Console.ReadLine()) - 1;
 
             Console.WriteLine("Välj konto att flytta pengarna till: ");
@@ -183,7 +189,7 @@ namespace Individuellt_Projekt
 
             Console.WriteLine("Ange summa att flytta: ");
             decimal transferAmount = decimal.Parse(Console.ReadLine());
-                                    
+               // Kontrollerar så att det finns pengar att föra över                     
               if (sourceIndex >= 0 && sourceIndex < accountBalances.Length &&
                   targetIndex >= 0 && targetIndex < accountBalances.Length &&  
                   accountBalances[sourceIndex] >= transferAmount)  
@@ -198,7 +204,8 @@ namespace Individuellt_Projekt
                  Console.WriteLine("Ogiltig överföring. Kontrollera dina val och saldo.");
                     
               }
-               Console.ReadKey();
+            Console.WriteLine("Vänligen klicka Enter för komma till huvudmenyn.");
+            Console.ReadKey();
             
         }
 
