@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Linq.Expressions;
 using System.Net.Mime;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
@@ -14,15 +15,15 @@ namespace Individuellt_Projekt
 
             decimal[][] accountBalance =
             {
-                new decimal[] { 21250, 15000 },
-                new decimal[] { 25350, 10000, 5000, 250000 },
+                new decimal[] { 21250, 15000, 360000, 15000 },
+                new decimal[] { 25350, 10000, 5000, 250000, 20000 },
                 new decimal[] { 150000 },
                 new decimal[] { 30256, 20000, 1000 },
                 new decimal[] { 80000, 20000 }
             };
             string[][] accountNames = {
-                new string[] { "1. Lönekonto", "2. Sparkonto" },
-                new string[] { "1. Lönekonto", "2. Sparkonto", "3. Resekonto", "4. Pensionskonto" },
+                new string[] { "1. Lönekonto", "2. Sparkonto", "3. Pensionskonto", "4. Resekonto "},
+                new string[] { "1. Lönekonto", "2. Sparkonto", "3. Resekonto", "4. Pensionskonto", "5. E-sparkonto" },
                 new string[] { "1. Sparkonto" },
                 new string[] { "1. Lönekonto", "2. Hyreskonto", "3. Sparande" },
                 new string[] { "1. Lönekonto", "2. Fritidskonto" }
@@ -91,7 +92,7 @@ namespace Individuellt_Projekt
                     switch (userInputmenu)
                     {
                         case 1:
-                            ShowAccountBalance(loggedInUser, accountNames[userIndex], accountBalance[userIndex]); 
+                            ShowAccountBalance(loggedInUser, accountNames[userIndex], accountBalance[userIndex]);
                             break;
                         case 2:
                             TransferBetweenAccounts(loggedInUser, accountNames[userIndex], accountBalance[userIndex]);
@@ -106,7 +107,7 @@ namespace Individuellt_Projekt
                             Console.Clear();
                             break;
                         default:
-                            Console.WriteLine("Ogiltligt val.\nVänligen klicka enter för gå tillbaka till huvudmenyn." );
+                            Console.WriteLine("Ogiltligt val.\nVänligen klicka enter för gå tillbaka till huvudmenyn.");
                             Console.ReadKey();
                             Console.Clear();
                             break;
@@ -130,87 +131,115 @@ namespace Individuellt_Projekt
             }
             Console.WriteLine("Vänligen klicka Enter för att gå vidare.");
             Console.ReadKey();
-            
+
 
         }
 
-        public static void WithdrawFromAccount(string user, string[] accountNames, decimal[] accountBalances , string[] pinCode , string[] Users)
+        public static void WithdrawFromAccount(string user, string[] accountNames, decimal[] accountBalances, string[] pinCode, string[] Users)
         {
             // metoden använder sig av metoden ShowAccountBalance för att presentera användarens konton samt kunna göra urtag. 
             Console.WriteLine($"Ta ut pengar för {user}:");
 
-            
+
             ShowAccountBalance(user, accountNames, accountBalances);
-            
-            Console.WriteLine("Välj konto att ta ut pengar från: ");
-            int sourceIndex = Convert.ToInt32(Console.ReadLine()) -1;
 
-            Console.WriteLine("Ange summa att ta ut: ");
-            decimal withdrawAmount = decimal.Parse(Console.ReadLine());
-
-            Console.WriteLine("Ange din PIN-kod för att bekräfta: ");
-            string pinConfirmation = Console.ReadLine();
-            
-            int userIndex = Array.IndexOf(Users, user);
-
-            // kontrollerar flera moment för att kunna göra ett urtag, finns tillräckligt med saldo? var PIN-kod ok? valt konto? 
-
-            if (userIndex != -1 && pinConfirmation == pinCode[userIndex] &&
-                sourceIndex >= 0 && sourceIndex < accountBalances.Length &&
-                accountBalances[sourceIndex] >= withdrawAmount)
+            bool withDraw = false;
+            while (!withDraw)
             {
-                accountBalances[sourceIndex] -= withdrawAmount;
-                Console.WriteLine($"Uttag av {withdrawAmount} lyckat!");
-                Console.WriteLine($"Nytt saldo på {accountNames[sourceIndex]}: {accountBalances[sourceIndex]}");
-                Console.ReadKey();
+                try
+                {
+                    Console.WriteLine("Välj konto att ta ut pengar från: ");
+                    int sourceIndex = Convert.ToInt32(Console.ReadLine()) - 1;
+
+                    Console.WriteLine("Ange summa att ta ut: ");
+                    decimal withdrawAmount = decimal.Parse(Console.ReadLine());
+
+                    Console.WriteLine("Ange din PIN-kod för att bekräfta: ");
+                    string pinConfirmation = Console.ReadLine();
+
+                    int userIndex = Array.IndexOf(Users, user);
+
+                    // kontrollerar flera moment för att kunna göra ett urtag, finns tillräckligt med saldo? var PIN-kod ok? valt konto? 
+
+                    if (userIndex != -1 && pinConfirmation == pinCode[userIndex] &&
+                        sourceIndex >= 0 && sourceIndex < accountBalances.Length &&
+                        accountBalances[sourceIndex] >= withdrawAmount)
+                    {
+                        accountBalances[sourceIndex] -= withdrawAmount;
+                        Console.WriteLine($"Uttag av {withdrawAmount}kr lyckat!");
+                        Console.WriteLine($"Nytt saldo på {accountNames[sourceIndex]}: {accountBalances[sourceIndex]}kr");
+                        Console.ReadKey();
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("Ogiltigt uttag. Kontrollera dina val, saldo och PIN-kod.");
+                    }
+                    Console.WriteLine("Vänligen klicka Enter för komma till huvudmenyn.");
+                    Console.ReadKey();
+                    withDraw = true;
+                }
+                catch (Exception ex) 
+                {
+                    Console.WriteLine("Felaktig inmatning");
+                }
                 
             }
-            else
-            {
-                Console.WriteLine("Ogiltigt uttag. Kontrollera dina val, saldo och PIN-kod.");
-            }
-            Console.WriteLine("Vänligen klicka Enter för komma till huvudmenyn.");
-            Console.ReadKey();
-        }
+         }
+
+            
+        
 
         public static void TransferBetweenAccounts(string user, string[] accountNames, decimal[] accountBalances)
         {
             /* likt för att ta ut gäller samma förutsättningar för att kunna flytta emellan konton. 
             Anropar tidigare medtod ShowAccountBalance för att visa användaren hur mycket det finns på deras konto */
             Console.WriteLine($"Överföring mellan konton för {user}:");
-                        
+
             ShowAccountBalance(user, accountNames, accountBalances);
+            bool transfer = false;
+            while (!transfer)
+            {
+                try
+                {
+                    Console.WriteLine("Välj konto att flytta pengar från: ");
+                    int sourceIndex = int.Parse(Console.ReadLine()) - 1;
 
-            Console.WriteLine("Välj konto att flytta pengar från: ");
-            int sourceIndex = int.Parse(Console.ReadLine()) - 1;
+                    Console.WriteLine("Välj konto att flytta pengarna till: ");
+                    int targetIndex = int.Parse(Console.ReadLine()) - 1;
 
-            Console.WriteLine("Välj konto att flytta pengarna till: ");
-            int targetIndex = int.Parse(Console.ReadLine()) - 1;
+                    Console.WriteLine("Ange summa att flytta: ");
+                    decimal transferAmount = decimal.Parse(Console.ReadLine());
+                    // Kontrollerar så att det finns pengar att föra över                     
+                    if (sourceIndex >= 0 && sourceIndex < accountBalances.Length &&
+                        targetIndex >= 0 && targetIndex < accountBalances.Length &&
+                        accountBalances[sourceIndex] >= transferAmount)
+                    {
+                        accountBalances[sourceIndex] -= transferAmount;
+                        accountBalances[targetIndex] += transferAmount;
+                        Console.WriteLine("Överföring lyckad!");
+                        Console.WriteLine($"Nytt saldo på {accountNames[sourceIndex]}: {accountBalances[sourceIndex]}kr.\nNytt saldo på {accountNames[targetIndex]}: {accountBalances[targetIndex]}kr.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Ogiltig överföring. Kontrollera dina val och saldo.");
 
-            Console.WriteLine("Ange summa att flytta: ");
-            decimal transferAmount = decimal.Parse(Console.ReadLine());
-               // Kontrollerar så att det finns pengar att föra över                     
-              if (sourceIndex >= 0 && sourceIndex < accountBalances.Length &&
-                  targetIndex >= 0 && targetIndex < accountBalances.Length &&  
-                  accountBalances[sourceIndex] >= transferAmount)  
-              {
-                   accountBalances[sourceIndex] -= transferAmount;
-                   accountBalances[targetIndex] += transferAmount;
-                   Console.WriteLine("Överföring lyckad!"); 
-                   Console.WriteLine($"Nytt saldo på {accountNames[sourceIndex]}: {accountBalances[sourceIndex]}kr.\nNytt saldo på {accountNames[targetIndex]}: {accountBalances[targetIndex]}kr.");  
-              }
-              else
-              {
-                 Console.WriteLine("Ogiltig överföring. Kontrollera dina val och saldo.");
-                    
-              }
-            Console.WriteLine("Vänligen klicka Enter för komma till huvudmenyn.");
-            Console.ReadKey();
-            
+                    }
+                    Console.WriteLine("Vänligen klicka Enter för komma till huvudmenyn.");
+                    Console.ReadKey();
+                    transfer = true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Felaktig inmatning.");
+                }
+
+
+            }
+
+
+
         }
-
-
-
     }
 }
 
